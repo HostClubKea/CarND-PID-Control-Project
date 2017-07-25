@@ -29,6 +29,7 @@ public:
    */
     virtual double ControlSignal(double cte, double speed) = 0;
 
+    virtual double Cost(double cte, double speed) = 0;
 };
 
 #endif /* ABSTRACT_CONTROLLER_H */

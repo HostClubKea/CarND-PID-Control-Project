@@ -1,8 +1,12 @@
 #include <uWS/uWS.h>
 #include <iostream>
 #include "json.hpp"
-#include "PID.h"
-#include "PIDTunner.h"
+//#include "PID.h"
+//#include "PIDTunner.h"
+#include "SteerController.h"
+#include "ParametersTunner.h"
+#include "ThrottleController.h"
+
 #include <math.h>
 
 // for convenience
@@ -43,26 +47,40 @@ int main()
 {
   uWS::Hub h;
 
-  PID pid;
-  PIDTunner pidTunner;
+  SteerController* steerController = new SteerController();
+  ParametersTunner steerTunner;
+  steerTunner.Init(steerController, {0.2, 4, 0}, {1, 1, 1});
+
+  ThrottleController* throttleController = new ThrottleController();
+  ParametersTunner throttleTunner;
+  throttleTunner.Init(throttleController, {0.01, 4, 0, 30, 0.3, 1}, {1,1,1,1,1,1});
+
+  bool tune_steer = true;
+
+  bool tune_throttle = false;
+
+//  PID pid;
+//
+//
+//  PIDTunner pidTunner;
 
   // TODO: Initialize the pid variable.
-  double init_Kp = 0.1;
-  double init_Ki = 0.005;
-  double init_Kd = 4.0;
+//  double init_Kp = 0.1;
+//  double init_Ki = 0.005;
+//  double init_Kd = 4.0;
   //pid.Init(init_Kp, init_Ki, init_Kd);
    // pid.Init(0.134611, 0.000270736, 3.05349);
   //pid.Init(1,1,1);
 
-    pid.Init(0,0,0);
-    pidTunner.Init(pid, 0);
+//    pid.Init(0,0,0);
+//    pidTunner.Init(pid, 0);
 //
 //    double distance = 0.0;
 //    double prev_speed = 0.0;
 //    double prev_cte = 0.0;
 //    double dt = 0.1;
 
-  h.onMessage([&pid, &pidTunner](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+  h.onMessage([&steerTunner, &throttleTunner ](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -81,8 +99,8 @@ int main()
           // j[1] is the data JSON object
           double cte = std::stod(j[1]["cte"].get<std::string>());
           double speed = std::stod(j[1]["speed"].get<std::string>());
-          double angle = std::stod(j[1]["steering_angle"].get<std::string>());
-          double steer_value;
+         // double angle = std::stod(j[1]["steering_angle"].get<std::string>());
+         // double steer_value;
 //
 //           distance += sqrt(pow(cte-prev_cte, 2) + pow((prev_speed+speed)/2*0.44704*dt,2));
 //            prev_cte = cte;
@@ -98,20 +116,35 @@ int main()
           * another PID controller to control the speed!
           */
 
-          pidTunner.UpdateError(pid, cte, speed, ws);
-          steer_value = pidTunner.TotalError(pid);
 
-          //std::cout << "Steer: " << steer_value << std::endl;
-          if (steer_value > 1) {
-            steer_value = 1;
-          } else if (steer_value < -1) {
-            steer_value = -1;
+
+
+          double steer_value = steerTunner.ControlSignal(cte, speed, true);
+          double throttle = throttleTunner.ControlSignal(cte, speed, true);
+
+          if(throttleTunner.need_restart || steerTunner.need_restart){
+             throttleTunner.Reset();
+             steerTunner.Reset();
+
+             std::string reset_msg = "42[\"reset\",{}]";
+             ws.send(reset_msg.data(), reset_msg.length(), uWS::OpCode::TEXT);
           }
 
-          double throttle = 0.3;//1 - 2*abs(steer_value);
 
-          if(speed < 30)
-            throttle = 0.3;
+//          pidTunner.UpdateError(pid, cte, speed, ws);
+//          steer_value = pidTunner.TotalError(pid);
+//
+//          //std::cout << "Steer: " << steer_value << std::endl;
+//          if (steer_value > 1) {
+//            steer_value = 1;
+//          } else if (steer_value < -1) {
+//            steer_value = -1;
+//          }
+//
+//          double throttle = 0.3;//1 - 2*abs(steer_value);
+//
+//          if(speed < 30)
+//            throttle = 0.3;
 
           // DEBUG
         //  std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
