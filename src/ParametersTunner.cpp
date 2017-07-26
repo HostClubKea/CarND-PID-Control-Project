@@ -58,6 +58,8 @@ double ParametersTunner::ControlSignal(double cte, double speed, double angle) {
     current_cost[1] += abs(100 - speed);
 
     time++;
+    UpdateDistance(cte, speed);
+
 
     if(tune && ( time >= tune_time || abs(cte) > 3.5 || speed < -0.1)){//UpdateDistance(cte, speed) >= tune_distance
 

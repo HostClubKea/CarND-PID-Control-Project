@@ -12,7 +12,7 @@ void PID::Init(double Kp, double Ki, double Kd) {
     d_error = 0.0;
     i_error = 0.0;
 
-    useNforI = true;
+    useNforI = false;
     windowSize = 10;
 }
 

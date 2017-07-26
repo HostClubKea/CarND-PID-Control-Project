@@ -50,12 +50,12 @@ int main() {
     SteerController *steerController = new SteerController();
     steerController->cost_index = 0;
     ParametersTunner steerTunner;
-    steerTunner.Init(steerController, {0.2, 3.95312, 0.0002}, {0.02, 0.02, 0.0004}, false);
+    steerTunner.Init(steerController, {0.2012, 3.95312, 0.0001}, {0.02, 0.02, 0.0004}, false);
 
     ThrottleController *throttleController = new ThrottleController();
     throttleController->cost_index = 1;
     ParametersTunner throttleTunner;
-    throttleTunner.Init(throttleController, {0.01, 0.76016, 0, 38, 1, 0.7}, {0.01, 0.05, 0, 2, 0, 0.1}, false);
+    throttleTunner.Init(throttleController, {0.01, 0.76016, 0, 38, 1, 0.7055}, {0.01, 0.05, 0, 2, 0, 0.1}, false); //0.01 0.7
 
 
     h.onMessage([&steerTunner, &throttleTunner](uWS::WebSocket <uWS::SERVER> ws, char *data, size_t length,

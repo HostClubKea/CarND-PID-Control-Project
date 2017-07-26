@@ -2,6 +2,38 @@
 Self-Driving Car Engineer Nanodegree Program
 
 ---
+##Parameters
+A PID controller continuously calculates an error value e(t) as the difference between a desired setpoint and a measured process variable and applies a correction based on proportional, integral, and derivative terms.
+
+###P-term
+The proportional term produces an output value that is proportional to the current error value. The proportional response can be adjusted by multiplying the error by a constant Kp, called the proportional gain constant.
+A pure P - controller is unstable and at oscillates around setpoint. 
+
+###I-term
+The contribution from the integral term is proportional to both the magnitude of the error and the duration of the error. The integral in a PID controller is the sum of the instantaneous error over time and gives the accumulated offset that should have been corrected previously. The accumulated error is then multiplied by the integral gain (Ki) and added to the controller output.
+Helps to 
+
+###D-term
+The derivative of the process error is calculated by determining the slope of the error over time and multiplying this rate of change by the derivative gain Kd. The magnitude of the contribution of the derivative term to the overall control action is termed the derivative gain, Kd.
+It helps decrease oscillation which we could see if we use only P-term
+
+##Choosing Hyperparameters
+I was lucky to found on the forums how to restart simulator which opens very easy way to tune parameters using Twiddle or any others algorithm.
+Using constant throttle 0.3 I was able to find solution for PID controller starting with [0,0,0]. Main problem was with cost function - at the 
+beginning I used max_value if car haven't finished track, but this was wrong idea, and I can't see any improvements for a long time. 
+Then I changed it so it become max_value-distance and then searching of parameters become faster. 
+
+After that I make PID controller also for throttle, and made loop for tuning: tune throttle, if no improvements for N steps then tune steering and repeat.
+For throttle it tunes more then 3 parameters and Twiddle algorithm isn't optimal for it, because some parameters should be changed simultaneously,
+base throttle might go up but if car fails to finish track we might need to increase coefficients for PID controller, so it would break more while turning.
+
+Also my thoughts was that steering should not only depends on cte but also on current speed. PID controllers gets on input
+cte*speed/90 instead of cte. Another path for improvements probably could be in changing coefficients depending on current speed, but i didn't test it yet.
+
+After tuning parametrs my car able to go 65-75 mph, but still oscillates on strait parts of track.
+
+[Final video](https://youtu.be/qKdLYosjMLs)
+
 
 ## Dependencies
 
