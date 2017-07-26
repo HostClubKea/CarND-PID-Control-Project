@@ -15,19 +15,20 @@ public:
     double distance;
     double previous_speed;
     double previous_cte;
+    double time;
+    double tune_time;
 
     std::vector<double> dp;
     std::vector<double> p;
 
     std::vector<double> best_p;
 
-
-    double min_cost;
-    double current_cost;
+    std::vector<double> min_cost;
+    std::vector<double> current_cost;
 
     int param_index, param_count;
-    int step, steps;
-    bool tried_adding, tried_subtracting, need_restart, success_lap, improved;
+    int step_without_improvement, steps;
+    bool tried_adding, tried_subtracting, need_restart, tune; //success_lap, improved,
 
     int error_index;
 
@@ -44,17 +45,19 @@ public:
     /*
     * Initialize Tunner.
     */
-    virtual void Init(AbstractController* controller, std::vector<double> p, std::vector<double> dp);
+    virtual void Init(AbstractController* controller, std::vector<double> p, std::vector<double> dp, bool tune);
 
     /*
     * Update the PID error variables given cross track error.
     */
 
-    double ControlSignal(double cte, double speed, bool tune);
+    double ControlSignal(double cte, double speed, double angle);
 
     void Reset();
 
     double UpdateDistance(double cte, double speed);
+
+    void PrintParams();
 
 };
 

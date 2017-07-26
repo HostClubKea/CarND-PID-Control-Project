@@ -6,9 +6,12 @@
 
 class AbstractController {
 public:
+
     PID pid;
+
     std::vector<double> k;
 
+    int cost_index;
     /*
     * Constructor
     */
@@ -27,9 +30,7 @@ public:
     /*
    * Get Control signal from controller.
    */
-    virtual double ControlSignal(double cte, double speed) = 0;
-
-    virtual double Cost(double cte, double speed) = 0;
+    virtual double ControlSignal(double cte, double speed, double angle) = 0;
 };
 
 #endif /* ABSTRACT_CONTROLLER_H */

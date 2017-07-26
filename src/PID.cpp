@@ -12,12 +12,30 @@ void PID::Init(double Kp, double Ki, double Kd) {
     d_error = 0.0;
     i_error = 0.0;
 
+    useNforI = true;
+    windowSize = 10;
 }
 
 void PID::UpdateError(double cte) {
     d_error = cte - p_error;
     p_error = cte;
     i_error += cte;
+
+    if(useNforI){
+        queue.push(cte);
+        if(queue.size() > windowSize){
+            queue.pop();
+        }
+
+        i_error = 0;
+        std::queue<double> tmp_q = queue; //copy the original queue to the temporary queue
+
+        while (!tmp_q.empty())
+        {
+            i_error += tmp_q.front();
+            tmp_q.pop();
+        }
+    }
 
 }
 

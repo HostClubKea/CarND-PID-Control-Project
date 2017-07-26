@@ -1,6 +1,8 @@
 #ifndef PID_H
 #define PID_H
 
+#include <queue>
+
 class PID {
 public:
   /*
@@ -10,6 +12,10 @@ public:
   double i_error;
   double d_error;
 
+
+  bool useNforI;
+  int windowSize;
+  std::queue<double> queue;
   /*
   * Coefficients
   */ 

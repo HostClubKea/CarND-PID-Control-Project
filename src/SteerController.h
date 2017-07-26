@@ -6,9 +6,7 @@
 
 class SteerController : public AbstractController {
 
-    double ControlSignal(double cte, double speed) override;
-
-    double Cost(double cte, double speed) override;
+    double ControlSignal(double cte, double speed, double angle) override;
 };
 
 
